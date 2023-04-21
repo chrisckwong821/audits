@@ -32,7 +32,6 @@ This vulnerability exists at two places in submit() method. Link given in code s
 ## Code Snippet
 https://github.com/sherlock-audit/2023-02-telcoin/blob/main/telcoin-audit/contracts/staking/FeeBuyback.sol#L63-L64
 
-https://github.com/sherlock-audit/2023-02-telcoin/blob/main/telcoin-audit/contracts/staking/FeeBuyback.sol#L63-L64
 
 ## Recommendation
 
