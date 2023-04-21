@@ -1,16 +1,16 @@
-Telcoin, participated in Sherlock
+# Telcoin, participated in Sherlock
 
-review commit hash - [7e2cde0d11c9c1336a6db7c98e0209fe358a8e6b](https://github.com/sherlock-audit/2023-02-telcoin-judging/commit/7e2cde0d11c9c1336a6db7c98e0209fe358a8e6b)
+*********************review commit hash -********************* - **[7e2cde0d11c9c1336a6db7c98e0209fe358a8e6b](https://github.com/sherlock-audit/2023-02-telcoin-judging/commit/7e2cde0d11c9c1336a6db7c98e0209fe358a8e6b)**
 
-The code was reviewed for a total of 3 hours.
+### The code was reviewed for a total of 3 hours.
 
-Issue M-1: `FeeBuyback.submit()` method may fail if all allowance is not used by referral contract
+# Issue M-1: `FeeBuyback.submit()` method may fail if all allowance is not used by referral contract
 
-###Summary
+## Summary
 
 Inside `submit()` method of FeeBuyback.sol, if token is _telcoin then it safeApprove to _referral contract. If _referral contract do not use all allowance then submit() method will fail in next call.
 
-###Vulnerability Detail
+## Vulnerability Detail
 
 `SafeApprove()` method of library SafeERC20Upgradeable revert in following scenario.
 
@@ -26,15 +26,15 @@ SafeERC20: approve from non-zero to non-zero allowance. FeeBuyback contract shou
 If it does not use all allowance in `increaseClaimableBy()` method then `submit()` method will revert in next call. 
 This vulnerability exists at two places in submit() method. Link given in code snippet section.
 
-Impact
+## Impact
 `Submit()` call will fail until referral contract do not use all allowance.
 
-Code Snippet
+## Code Snippet
 https://github.com/sherlock-audit/2023-02-telcoin/blob/main/telcoin-audit/contracts/staking/FeeBuyback.sol#L63-L64
 
 https://github.com/sherlock-audit/2023-02-telcoin/blob/main/telcoin-audit/contracts/staking/FeeBuyback.sol#L63-L64
 
-###Recommendation
+## Recommendation
 
 Reset allowance to 0 before non-zero approval.
 
