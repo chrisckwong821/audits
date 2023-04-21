@@ -41,3 +41,5 @@ Reset allowance to 0 before non-zero approval.
 _telcoin.safeApprove(address(_referral), 0);
 _telcoin.safeApprove(address(_referral), _telcoin.balanceOf(address(this)));
 ```
+
+**[Link to Issue Submission](https://github.com/sherlock-audit/2023-02-telcoin-judging/issues/26)**
