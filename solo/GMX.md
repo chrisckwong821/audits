@@ -1,13 +1,14 @@
-GMX, participated in Sherlock
-review commit hash - - 7e2cde0d11c9c1336a6db7c98e0209fe358a8e6b
+# GMX, participated in Sherlock
+
+*********************review commit hash -********************* - **[b1557fa286c35f54c65a38a7b57baf87ecad1b5b](https://github.com/sherlock-audit/2023-02-gmx-judging)**
 
 The code was reviewed for a total of 6 hours.
 Issue M-1: _validateRange in Config does not check the input value as described
 
-Summary
+## Summary
 _validateRange in Config does not check the input value as described
 
-Vulnerability Detail
+## Vulnerability Detail
 The function `_validateRange` does not check the input against the boundaries.
 
 However in the dev note
@@ -19,13 +20,13 @@ However in the dev note
     function _validateRange(bytes32 baseKey, uint256 value) internal pure {
 ```
 
-Impact
+## Impact
 Input value that works beyond the expected range could be implemented
 
-Code Snippet
+## Code Snippet
 https://github.com/gmx-io/gmx-synthetics/blob/8028cb8022b85174be861b311f1082b5b76239df/contracts/config/Config.sol#L271
 
-Recommendation
+## Recommendation
 Check agianst the pre-set maximum and minimum value
 
 
