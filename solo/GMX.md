@@ -31,4 +31,4 @@ https://github.com/gmx-io/gmx-synthetics/blob/8028cb8022b85174be861b311f1082b5b7
 Check agianst the pre-set maximum and minimum value
 
 
-[Link to the original submission]([https://github.com/sherlock-audit/2023-02-gmx-judging/issues/49](https://github.com/sherlock-audit/2023-02-gmx-judging#issue-m-36-_validaterange-in-config-does-not-check-the-input-value-as-described)
+[Link to the original submission](https://github.com/sherlock-audit/2023-02-gmx-judging#issue-m-36-_validaterange-in-config-does-not-check-the-input-value-as-described)
