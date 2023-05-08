@@ -2,8 +2,9 @@
 
 *********************review commit hash -********************* - **[b1557fa286c35f54c65a38a7b57baf87ecad1b5b](https://github.com/sherlock-audit/2023-02-gmx-judging)**
 
-The code was reviewed for a total of 6 hours.
-Issue M-1: _validateRange in Config does not check the input value as described
+### The code was reviewed for a total of 6 hours.
+
+# Issue M-1: _validateRange in Config does not check the input value as described
 
 ## Summary
 _validateRange in Config does not check the input value as described
