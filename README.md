@@ -8,3 +8,5 @@
 - [GMX - 2.0](https://github.com/chrisckwong821/audits/blob/main/solo/GMX.md)
 
 ### April 2023
+
+- [Frankencoin](https://github.com/chrisckwong821/audits/blob/main/solo/Frankencoin.md)
