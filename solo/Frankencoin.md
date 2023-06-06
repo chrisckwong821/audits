@@ -1,8 +1,8 @@
-# Frankecoin, participated in Code4Arena (ranked 6th overall with 2k pay)
+# Frankencoin, participated in Code4Arena (ranked 6th overall with 2k pay)
 
 *********************review commit hash -********************* - **[1022cb106919fba963a89205d3b90bf62543f68f](https://github.com/code-423n4/2023-04-frankencoin)**
 
-### The code was reviewed for a total of 9 hours.
+### The code was reviewed for a total of 8 hours.
 
 # Issue M-1(Solo): notifyLoss can be frontrun by redeem
 
