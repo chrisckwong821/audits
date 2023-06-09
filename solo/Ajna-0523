@@ -1,0 +1,146 @@
+# Ajna-0523, participated in Code4rena
+
+*********************review commit hash -********************* - **[276942bc2f97488d07b887c8edceaaab7a5c3964](https://github.com/code-423n4/2023-05-ajna)**
+
+### The code was reviewed for a total of 4 hours.
+
+# Issue H-1: updateBucketExchangeRatesAndClaim has no check on the address of the pool.
+
+
+## Summary
+updateBucketExchangeRatesAndClaim has no check on the address of the pool.
+
+## Vulnerability Detail
+
+malicious caller can pass in an arbitrary address of the pool, leading to a call to pass and updating a non-existing pool for `_updateBucketExchangeRates` and `_updateBucketExchangeRate`, subsequently inflating the `updateRewardsClaimed` of the curBurnEpoch.
+
+```solidity
+function updateBucketExchangeRatesAndClaim(
+    address pool_,
+    uint256[] calldata indexes_
+) external override returns (uint256 updateReward) {
+    updateReward = _updateBucketExchangeRates(pool_, indexes_);
+
+    // transfer rewards to sender
+    _transferAjnaRewards(updateReward);
+}
+```
+
+https://github.com/code-423n4/2023-05-ajna/blob/main/ajna-core/src/RewardsManager.sol#L310-L318
+
+1. In `_updateBucketExchangeRates`, first an external view to the `currentBurnEpoch()` is called, which the malicious caller can return anything.
+
+```solidity
+
+function _updateBucketExchangeRates(
+    address pool_,
+    uint256[] memory indexes_
+) internal returns (uint256 updatedRewards_) {
+    // get the current burn epoch from the given pool
+    uint256 curBurnEpoch = IPool(pool_).currentBurnEpoch();
+```
+https://github.com/code-423n4/2023-05-ajna/blob/main/ajna-core/src/RewardsManager.sol#L671-L735
+
+2. Assuming the caller want to manipulate the value of `updateRewardsClaimed`, he would return a non-zero value for curBurnEpoch. Then `_getPoolAccumulators` and `_updateBucketExchangeRateAndCalculateRewards` are called.
+
+```solidity
+else {
+        // retrieve accumulator values used to calculate rewards accrued
+        (
+            uint256 curBurnTime,
+            uint256 totalBurned,
+            uint256 totalInterestEarned
+        ) = _getPoolAccumulators(pool_, curBurnEpoch, curBurnEpoch - 1);
+
+        if (block.timestamp <= curBurnTime + UPDATE_PERIOD) {
+
+            // update exchange rates and calculate rewards if tokens were burned and within allowed time period
+            for (uint256 i = 0; i < indexes_.length; ) {
+
+                // calculate rewards earned for updating bucket exchange rate
+                updatedRewards_ += _updateBucketExchangeRateAndCalculateRewards(
+                    pool_,
+                    indexes_[i],
+                    curBurnEpoch,
+                    totalBurned,
+                    totalInterestEarned
+                );
+
+                // iterations are bounded by array length (which is itself bounded), preventing overflow / underflow
+                unchecked { ++i; }
+            }
+
+            uint256 rewardsCap            = Maths.wmul(UPDATE_CAP, totalBurned);
+            uint256 rewardsClaimedInEpoch = updateRewardsClaimed[curBurnEpoch];
+
+            // update total tokens claimed for updating bucket exchange rates tracker
+            if (rewardsClaimedInEpoch + updatedRewards_ >= rewardsCap) {
+                // if update reward is greater than cap, set to remaining difference
+                updatedRewards_ = rewardsCap - rewardsClaimedInEpoch;
+            }
+
+            // accumulate the full amount of additional rewards
+            updateRewardsClaimed[curBurnEpoch] += updatedRewards_;
+        }
+```
+3. `_getPoolAccumulators` has no check on _pool as an valid input
+
+https://github.com/code-423n4/2023-05-ajna/blob/main/ajna-core/src/RewardsManager.sol#L636-L661
+
+```solidity
+function _getPoolAccumulators(
+    address pool_,
+    uint256 currentBurnEventEpoch_,
+    uint256 lastBurnEventEpoch_
+) internal view returns (uint256, uint256, uint256) {
+    (
+        uint256 currentBurnTime,
+        uint256 totalInterestLatest,
+        uint256 totalBurnedLatest
+    ) = IPool(pool_).burnInfo(currentBurnEventEpoch_);
+
+    (
+        ,
+        uint256 totalInterestAtBlock,
+        uint256 totalBurnedAtBlock
+    ) = IPool(pool_).burnInfo(lastBurnEventEpoch_);
+
+    uint256 totalBurned   = totalBurnedLatest   != 0 ? totalBurnedLatest   - totalBurnedAtBlock   : totalBurnedAtBlock;
+    uint256 totalInterest = totalInterestLatest != 0 ? totalInterestLatest - totalInterestAtBlock : totalInterestAtBlock;
+
+    return (
+        currentBurnTime,
+        totalBurned,
+        totalInterest
+    );
+}
+```
+
+4. `_updateBucketExchangeRateAndCalculateRewards` has no check on _pool as an valid input
+
+https://github.com/code-423n4/2023-05-ajna/blob/main/ajna-core/src/RewardsManager.sol#L768-L804
+
+```solidity
+function _updateBucketExchangeRateAndCalculateRewards(
+    address pool_,
+    uint256 bucketIndex_,
+    uint256 burnEpoch_,
+    uint256 totalBurned_,
+    uint256 interestEarned_
+) internal returns (uint256 rewards_) {
+    uint256 burnExchangeRate = bucketExchangeRates[pool_][bucketIndex_][burnEpoch_];
+...
+```
+
+
+## Impact
+
+The updateBucketExchangeRatesAndClaim method is designed to reward people for keeping the current exchange rate up to date (it has the following description: "Caller can claim 5% of the rewards that have accumulated to each bucket since the last burn event, if it hasn't already been updated").
+The issue is that there is no check on the pool_ to ensure that is a valid ajna pool or that it is a pool from a currently staked token.
+This means that an attacker can supply their own contract to control all of the values used to calculate the reward amount, allowing them to transfer an arbitrary amount of reward tokens (up to the balance of the rewards manager).
+
+## Code Snippet
+https://github.com/code-423n4/2023-04-frankencoin/blob/main/contracts/Frankencoin.sol#L280-L288
+
+## Recommendation
+validate pool address is an valid input.
