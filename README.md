@@ -8,6 +8,29 @@ Competitive smart-contract security reviews as **0xGoodess** on [Sherlock](https
 
 Each file below holds my findings for one contest, with a link to the original submission. This page lists 30 contests (11 High, 35 Medium) from published reports.
 
+## Highlights
+
+### 1. Index Coop: leverage engine ignored Aave's eMode risk settings
+**High · Sherlock, 3rd place overall**
+
+Index Coop's leveraged ETH strategy borrows on Aave, and it calculates how much it can safely borrow or repay from Aave's loan-to-value limits. The new extension turned on Aave's eMode, which raises those limits. The old calculation still read the standard limits, so the strategy worked from the wrong risk numbers. I recommended checking whether the position is in eMode and, if so, using eMode's settings.
+
+[Full write-up](https://github.com/chrisckwong821/audits/blob/main/solo/Index.md) · [Original submission](https://github.com/sherlock-audit/2023-05-Index-judging/issues/13)
+
+### 2. Perennial: anyone could delay another user's deposit indefinitely
+**High · Sherlock, 4th place overall**
+
+Perennial's vault settles deposits in the next epoch to block front-running. But anyone could deposit on someone else's behalf, and each new deposit pushed that account's settlement back an epoch. An attacker could keep sending dust deposits to delay a victim's funds until settlement favored the attacker. I recommended allowing deposits only from the account owner or an address it approves.
+
+[Full write-up](https://github.com/chrisckwong821/audits/blob/main/solo/Perennial.md) · [Original submission](https://github.com/sherlock-audit/2023-05-perennial-judging/issues/33)
+
+### 3. Moonwell: a safety cap that could freeze the whole lending market
+**Medium · Code4rena, selected as the primary report**
+
+Moonwell reverts any interest update if the borrow rate exceeds a maximum, as a safety check. I showed that utilization can go above 100% when reserves exceed available cash, which pushes the rate past the "unreachable" maximum. Because interest updates run on every deposit, withdrawal, borrow and repayment, all of them would fail and user funds would be locked. The judges selected my report as the primary one for this issue.
+
+[Full write-up](https://github.com/chrisckwong821/audits/blob/main/solo/Moonwell.md) · [Final report](https://code4rena.com/reports/2023-07-moonwell) · [Original submission](https://github.com/code-423n4/2023-07-moonwell-findings/issues/40)
+
 ## Solo
 
 ### March 2023
