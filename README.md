@@ -11,14 +11,14 @@ Each file below holds my findings for one contest, with a link to the original s
 ## Highlights
 
 ### 1. Index Coop: leverage engine ignored Aave's eMode risk settings
-**High · Sherlock, 3rd place overall**
+**High · Sherlock, 3rd place overall · 9,274 USDC awarded for the contest**
 
 Index Coop's leveraged ETH strategy borrows on Aave, and it calculates how much it can safely borrow or repay from Aave's loan-to-value limits. The new extension turned on Aave's eMode, which raises those limits. The old calculation still read the standard limits, so the strategy worked from the wrong risk numbers. I recommended checking whether the position is in eMode and, if so, using eMode's settings.
 
 [Full write-up](https://github.com/chrisckwong821/audits/blob/main/solo/Index.md) · [Original submission](https://github.com/sherlock-audit/2023-05-Index-judging/issues/13)
 
 ### 2. Perennial: anyone could delay another user's deposit indefinitely
-**High · Sherlock, 4th place overall**
+**High · Sherlock, 4th place overall · 6,608 USDC awarded for the contest**
 
 Perennial's vault settles deposits in the next epoch to block front-running. But anyone could deposit on someone else's behalf, and each new deposit pushed that account's settlement back an epoch. An attacker could keep sending dust deposits to delay a victim's funds until settlement favored the attacker. I recommended allowing deposits only from the account owner or an address it approves.
 
